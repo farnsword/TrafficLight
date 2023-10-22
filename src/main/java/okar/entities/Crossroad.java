@@ -43,11 +43,8 @@ public class Crossroad implements TrafficLightListener, UserInputListener {
 
     @Override
     public void startTrafficDrivethrough() {
-//        tempChangeDirection();
         startTraffic();
     }
-
-
 
     public void stop() {
         System.out.println("Stopping the crossroad");
@@ -95,14 +92,6 @@ public class Crossroad implements TrafficLightListener, UserInputListener {
         }
     }
 
-    private void tempChangeDirection() {
-         scheduledExecutorService.scheduleAtFixedRate(() ->
-                        changeDirection(Direction.values()[Math.abs(getCurrentDirection().ordinal() - 1)]),
-                0,
-                4,
-                TimeUnit.SECONDS);
-    }
-
     private void startTraffic() {
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             Direction current = getCurrentDirection();
@@ -116,60 +105,8 @@ public class Crossroad implements TrafficLightListener, UserInputListener {
                 synchronized (VEHICLES_QUEUES_LOCK) {
                     TrafficNotifier.trafficChanged(vehiclesQueues);
                 }
-//                printCurrentTraffic();
-
-
-//                if (Objects.nonNull(vehicles) && !vehicles.isEmpty()) {
-//                    vehicles.pop();
-//                    System.out.println();
-//                    System.out.println("Vehicle went through from - " + direction);
-//                    System.out.println();
-//                }
             }
         }, 1, 1, TimeUnit.SECONDS);
-    }
-
-    private void printCurrentTraffic() {
-
-        System.out.printf("     | %3d | %3d |     |     |     %n",
-                getCurrentLaneLoad(WindRose.NORTH, Constants.PUBLIC_LANE_NAME),
-                getCurrentLaneLoad(WindRose.NORTH, Constants.REGULAR_LANE_NAME)); // north
-        System.out.println("_____|_____|_____|_____|_____|_____");
-        System.out.printf("     |     |     |     |     | %d%n",
-                getCurrentLaneLoad(WindRose.EAST, Constants.PUBLIC_LANE_NAME)); // east
-        System.out.println("-----|-----|-----|-----|-----|----");
-        System.out.printf("     |     |     |     |     | %d%n",
-                getCurrentLaneLoad(WindRose.EAST, Constants.REGULAR_LANE_NAME)); // east
-        System.out.println("-----|-----|-----|-----|-----|----");
-        System.out.printf(" %3d |     |     |     |     |    %n",
-                getCurrentLaneLoad(WindRose.WEST, Constants.REGULAR_LANE_NAME)); // west
-        System.out.println("-----|-----|-----|-----|-----|----");
-        System.out.printf(" %3d |     |     |     |     |    %n",
-                getCurrentLaneLoad(WindRose.WEST, Constants.PUBLIC_LANE_NAME)); // west
-        System.out.println("_____|_____|_____|_____|_____|_____");
-        System.out.println("     |     |     |     |     |     ");
-        System.out.printf("     |     |     | %3d | %3d |     %n",
-                getCurrentLaneLoad(WindRose.SOUTH, Constants.REGULAR_LANE_NAME),
-                getCurrentLaneLoad(WindRose.SOUTH, Constants.PUBLIC_LANE_NAME)); // south
-        System.out.println();
-
-
-//        |  7 | 9 |    |    |
-//    ____|____|___|____|____|____
-//        |    |   |    |    | 3
-//    ----|----|---|----|----|----
-//        |    |   |    |    | 4
-//    ----|----|---|----|----|----
-//      6 |    |   |    |    |
-//    ----|----|---|----|----|----
-//      1 |    |   |    |    |
-//    ____|___ |___|____|____|____
-//        |    |   |    |    |
-//        |    |   |  5 |  1 |
-    }
-
-    private int getCurrentLaneLoad(WindRose direction, String lane) {
-        return vehiclesQueues.get(direction).get(lane).size();
     }
 
     private void scheduleVehicleArrival() {
@@ -203,7 +140,6 @@ public class Crossroad implements TrafficLightListener, UserInputListener {
         }
 
         System.out.println();
-//        System.out.println(LocalTime.now() + " - Vehicles arrived: " + vehicle + " from " + direction);
         getVehiclesQueues().forEach((w, v) -> System.out.println(w + " : " + v.get(Constants.PUBLIC_LANE_NAME).size() + " / " + v.get(Constants.REGULAR_LANE_NAME).size()));
         System.out.println();
 
